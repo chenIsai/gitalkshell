@@ -1,7 +1,27 @@
 const express = require('express')
 const {exec} = require("child_process");
 const port = 4000;
+const WebSocket = require("ws");
+const ws = new WebSocket("wss://https://htn2020.herokuapp.com/", {
+  origin: "https://htn2020.herokuapp.com/",
+});
 
+ws.on('open', function open() {
+  console.log('connected');
+  ws.send(Date.now());
+});
+
+ws.on('close', function close() {
+  console.log('disconnected');
+});
+
+ws.on('message', function incoming(data) {
+  console.log(`Roundtrip time: ${Date.now() - data} ms`);
+
+  setTimeout(function timeout() {
+    ws.send(Date.now());
+  }, 500);
+});
 const app = express();
 
 app.get('/', (req, res) => {
